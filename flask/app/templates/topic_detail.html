@@ -1,0 +1,96 @@
+
+<style>
+    /* Стили для страницы темы */
+    .card {
+        border-radius: 12px; /* Закругленные углы для карточки */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Легкая тень */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Плавное изменение при наведении */
+    }
+
+    .card:hover {
+        transform: translateY(-5px); /* Подъем карточки при наведении */
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Увеличенная тень */
+    }
+
+    .card-body {
+        padding: 25px; /* Внутренние отступы */
+    }
+
+    .card-title {
+        font-size: 1.5rem; /* Размер заголовка */
+        font-weight: 700; /* Жирный шрифт */
+        color: #343a40; /* Темный цвет для заголовка */
+    }
+
+    .card-text {
+        font-size: 1rem; /* Размер текста */
+        color: #6c757d; /* Цвет текста (серый) */
+    }
+
+    .list-group-item {
+        list-style: none;
+        font-size: 1rem; /* Размер текста в списке */
+        color: #007bff; /* Синий цвет для ссылок */
+        border: none; /* Убираем границу у элементов списка */
+        padding: 10px 15px; /* Отступы */
+    }
+
+    .list-group-item:hover {
+        background-color: #f1f1f1; /* Цвет фона при наведении */
+    }
+
+    .list-group {
+        padding-left: 0; /* Убираем отступы слева */
+        margin-top: 15px; /* Отступ сверху */
+    }
+
+    .container {
+        padding: 40px 0; /* Отступы сверху и снизу для контейнера */
+    }
+
+    hr {
+        border-color: #dee2e6; /* Цвет линии разделителя */
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    h5 {
+        font-size: 1.25rem; /* Размер подзаголовка */
+        font-weight: 600; /* Жирный шрифт */
+        color: #343a40; /* Темный цвет для подзаголовка */
+    }
+
+    .text-muted {
+        color: #6c757d; /* Серый цвет для текста */
+    }
+</style>
+{% extends 'base.html' %}
+
+{% block title %}{{ topic.title }}{% endblock %}
+
+{% block content_title %}{{ topic.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="search-container mb-4">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title">{{ topic.title }}</h4>
+            {% if topic.threads.count() %}
+            <hr>
+            <h5>Треды по этой теме:</h5>
+            <ul class="list-group">
+                {% for thread in topic.threads %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('main.thread_detail', slug=thread.slug) }}">{{ thread.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted">Нет тредов для данной темы.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

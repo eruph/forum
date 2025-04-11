@@ -1,0 +1,179 @@
+<style>
+ /* Стили для формы поиска и кнопки */
+ .filter-input {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .filter-input:focus {
+    border-color: #0056b3;
+    outline: none;
+  }
+
+  .auth-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 20px;
+    font-weight: 600;
+    border-radius: 5px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .auth-btn:hover {
+    background-color: #218838;
+  }
+
+  .search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .list-group-item {
+    list-style: none;
+  }
+
+  /* Стили для пагинации */
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .page-link {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #f8f9fa;
+    color: #007bff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+
+  .page-link:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  .page-link.disabled {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+  }
+
+  .page-info {
+    font-size: 1rem;
+    color: #495057;
+  }
+  .create-post-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 20px;
+  font-weight: 600;
+  border-radius: 5px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.create-post-btn:hover {
+  background-color: #0056b3;
+}
+.auth {
+  color: white;
+  text-decoration: none;
+}
+
+</style>
+
+{% extends 'base.html' %}
+
+{% block title %}{{ thread.title }}{% endblock %}
+
+{% block content_title %}
+  Тред: {{ thread.title }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="search-container mb-4">
+    <form method="GET">
+        <input type="text" class="filter-input" placeholder="Введите название поста" name="p" value="{{ request.args.get('p', '') }}">
+    </form>
+    {% if current_user.has_role('admin') %}
+      <a href="{{ url_for('main.create_post', slug=thread.slug) }}" class="create-post-btn">Создать пост</a>
+    
+    {% endif %}
+    {% if not current_user.is_authenticated %}
+      <button class="auth-btn">
+        <a href="{{ url_for('security.login') }}" class="auth">Авторизация</a>
+      </button>
+    {% else %}
+      <button class="auth-btn">
+        <a href="{{ url_for('security.logout') }}" class="auth">Выход</a>
+      </button>
+    {% endif %}
+    
+  </div>
+  
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h4 class="card-title">{{ thread.title }}</h4>
+      <p class="card-text">
+        <strong>Тема:</strong> 
+        {% if thread.topic %}
+          <a href="{{ url_for('main.topic_detail', slug=thread.topic.slug) }}">
+            {{ thread.topic.title }}
+          </a>
+        {% else %}
+          Не задана
+        {% endif %}
+      </p>
+      <hr>
+      {% if posts %}
+      <h5>Посты в этом треде:</h5>
+      <ul class="list-group">
+        {% for post in pages.items %}
+          <li class="list-group-item">
+            <a href="{{ url_for('main.post_detail', slug=post.slug) }}">{{ post.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted">Нет постов, удовлетворяющих фильтру.</p>
+    {% endif %}
+
+    </div>
+  </div>
+  <div class="pagination-container mt-4">
+    {% if pages.has_prev %}
+      <a href="{{ url_for('main.thread_detail', slug=thread.slug, p=request.args.get('p', ''), page=pages.prev_num) }}" class="page-link">&laquo; Предыдущая</a>
+    {% else %}
+      <span class="page-link disabled">&laquo; Предыдущая</span>
+    {% endif %}
+    
+    <span class="page-info">
+        Страница {{ pages.page }} из {{ pages.pages }}
+    </span>
+    
+    {% if pages.has_next %}
+      <a href="{{ url_for('main.thread_detail', slug=thread.slug, p=request.args.get('p', ''), page=pages.next_num) }}" class="page-link">Следующая &raquo;</a>
+    {% else %}
+      <span class="page-link disabled">Следующая &raquo;</span>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

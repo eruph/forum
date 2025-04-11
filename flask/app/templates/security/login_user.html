@@ -1,0 +1,173 @@
+<style>
+  .login-container {
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .login-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    color: #343a40;
+  }
+
+  .login-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  input[type="submit"], .login-btn {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  input[type="submit"]:hover, .login-btn:hover {
+    background-color: #0056b3;
+  }
+
+  h2 {
+    margin-top: 40px;
+    font-size: 1.2rem;
+    text-align: center;
+    color: #495057;
+  }
+
+  .fs-gap {
+    margin: 15px 0;
+  }
+
+  .oauth-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .oauth-form form {
+    margin: 0;
+  }
+
+  .or-separator {
+    text-align: center;
+    margin: 20px 0;
+    font-weight: bold;
+    color: #6c757d;
+  }
+
+  .error {
+    color: red;
+    font-size: 0.9rem;
+  }
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="checkbox"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    outline: none;
+  }
+
+  input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+    transform: scale(1.2);
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #343a40;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+</style>
+{% set title = title|default(_fsdomain('Login')) %}
+{% extends "base.html" %}
+{% from "security/_macros.html" import render_field_with_errors, render_field, render_field_errors, render_form_errors, prop_next %}
+
+
+{% block content %}
+  <div class="login-container">
+    {% include "security/_messages.html" %}
+    <h1>{{ _fsdomain('Login') }}</h1>
+    <form action="{{ url_for_security('login') }}{{ prop_next() }}" method="post" name="login_user_form">
+      {{ login_user_form.hidden_tag() }}
+      {{ render_form_errors(login_user_form) }}
+
+      {% if login_user_form.email and "email" in identity_attributes %}
+        {{ render_field_with_errors(login_user_form.email) }}
+      {% endif %}
+
+      {% if login_user_form.username and "username" in identity_attributes %}
+        {% if login_user_form.email and "email" in identity_attributes %}
+          <div class="or-separator">{{ _fsdomain("or") }}</div>
+        {% endif %}
+        {{ render_field_with_errors(login_user_form.username) }}
+      {% endif %}
+
+      <div class="fs-gap">
+        {{ render_field_with_errors(login_user_form.password) }}
+      </div>
+
+      {{ render_field_with_errors(login_user_form.remember) }}
+      {{ render_field_errors(login_user_form.csrf_token) }}
+      {{ render_field(login_user_form.submit) }}
+    </form>
+
+    {% if security.webauthn %}
+      <hr class="fs-gap">
+      <h2>{{ _fsdomain("Use WebAuthn to Sign In") }}</h2>
+      <form method="get" id="wan_signin_form" name="wan_signin_form">
+        <input id="wan_signin" name="wan_signin" type="submit" class="login-btn" value="{{ _fsdomain('Sign in with WebAuthn') }}" formaction="{{ url_for_security('wan_signin') }}{{ prop_next() }}">
+      </form>
+    {% endif %}
+
+    {% if security.oauthglue %}
+      <hr class="fs-gap">
+      <h2>{{ _fsdomain("Use Social Oauth to Sign In") }}</h2>
+      <div class="oauth-form">
+        {% for provider in security.oauthglue.provider_names %}
+          <form method="post" id="{{ provider }}_form" name="{{ provider }}_form">
+            <input id="{{ provider }}" name="{{ provider }}" type="submit" class="login-btn" value="{{ _fsdomain('Sign in with %(provider)s', provider=provider) }}" formaction="{{ url_for_security('oauthstart', name=provider) }}{{ prop_next() }}">
+            {% if csrf_token is defined %}
+              <input id="{{ provider }}_csrf_token" name="{{ provider }}_csrf_token" type="hidden" value="{{ csrf_token() }}">
+            {% endif %}
+          </form>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  {% include "security/_menu.html" %}
+{% endblock content %}

@@ -1,0 +1,104 @@
+<style>
+  .filter-input {
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+  }
+
+  .filter-input:focus {
+      border-color: #0056b3;
+      outline: none;
+  }
+
+  .auth-btn {
+      background-color: #28a745;
+      color: white;
+      padding: 12px 20px;
+      font-weight: 600;
+      border-radius: 5px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+  }
+
+  .auth-btn:hover {
+      background-color: #218838;
+  }
+
+  .search-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+  }
+
+  .list-group-item {
+      list-style: none;
+  }
+
+  /* Пагинация */
+  .pagination {
+      justify-content: center;
+      margin-top: 30px;
+  }
+
+  .page-item.active .page-link {
+      background-color: #28a745;
+      border-color: #28a745;
+  }
+
+  .page-link {
+      border-radius: 5px;
+      padding: 10px 15px;
+      color: #495057;
+      border: 1px solid #ddd;
+      text-decoration: none;
+  }
+
+  .page-link:hover {
+      background-color: #f8f9fa;
+  }
+</style>
+
+{% extends 'base.html' %}
+
+{% block title %}Посты{% endblock %}
+
+{% block content_title %}Список постов{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+<div class="row">
+  {% for post in posts.items %}
+  <div class="col-md-4">
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ post.title }}</h5>
+        <p class="card-text">{{ post.body | truncate(100) }}</p>
+        <a href="{{ url_for('main.post_detail', slug=post.slug) }}" class="btn btn-primary">Читать далее</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Пагинация -->
+<div class="pagination">
+  {% if posts.has_prev %}
+    <a href="{{ url_for('main.post', page=posts.prev_num) }}" class="page-link">&laquo; Предыдущая</a>
+  {% endif %}
+  
+  <span class="page-item disabled">
+    Страница {{ posts.page }} из {{ posts.pages }}
+  </span>
+  
+  {% if posts.has_next %}
+    <a href="{{ url_for('main.post', page=posts.next_num) }}" class="page-link">Следующая &raquo;</a>
+  {% endif %}
+</div>
+</div>
+{% endblock %}

@@ -1,0 +1,87 @@
+<style>
+    .container {
+        max-width: 200px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-size: 1.1rem;
+        color: #343a40;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 1rem;
+        border: 1px solid #ced4da;
+        transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    .form-control:focus {
+        border-color: #fd9902;
+        box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+        outline: none;
+    }
+
+    .btn-success {
+        background-color: #fd9902;
+        border: none;
+        padding: 12px 20px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+    .btn-success:hover {
+        background-color: #fd9902;
+    }
+
+    .text-danger {
+        font-size: 0.9rem;
+        margin-top: 4px;
+    }
+
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+
+    .fw-bold {
+        font-weight: 600;
+    }
+</style>
+
+{% extends 'base.html' %}
+
+{% block title %}
+    Создание нового поста
+{% endblock %}
+
+{% block content_title %}
+    Новый пост
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <form action="{{ url_for('main.create_post', slug=thread.slug) }}" method="POST" class="p-4 border rounded shadow-sm bg-light">
+
+
+        {% for field in form %}
+            <div class="form-group mb-3">
+                {{ field.label(class_="form-label fw-bold") }}
+                {{ field(class_="form-control") }}
+                {% if field.errors %}
+                    <div class="text-danger small mt-1">
+                        {{ field.errors[0] }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success mt-3">Создать пост</button>
+    </form>
+</div>
+{% endblock %}

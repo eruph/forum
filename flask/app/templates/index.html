@@ -1,0 +1,162 @@
+<style>
+    /* Стили для темы */
+    .card {
+        border-radius: 10px; /* Закругленные углы для карточек */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легкая тень */
+        transition: transform 0.3s ease, box-shadow 0.3s ease; /* Плавное изменение при наведении */
+    }
+
+    .card:hover {
+        transform: translateY(-5px); /* Подъем карточки при наведении */
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); /* Увеличенная тень */
+    }
+
+    .card-body {
+        padding: 20px; /* Внутренние отступы */
+    }
+
+    .card-title {
+        font-size: 1.25rem; /* Размер заголовка */
+        font-weight: 600; /* Жирный шрифт */
+    }
+
+    .card-text {
+        font-size: 0.875rem; /* Размер текста */
+        color: #6c757d; /* Цвет текста (серый) */
+    }
+
+    .card a.btn {
+        margin-top: 10px; /* Отступ сверху для кнопки */
+        text-transform: uppercase; /* Преобразование текста кнопки в верхний регистр */
+        font-weight: 600; /* Жирный шрифт для кнопки */
+        padding: 10px 20px; /* Внутренние отступы */
+        transition: background-color 0.3s ease; /* Плавное изменение цвета кнопки */
+    }
+
+    .card a.btn:hover {
+        background-color: #0056b3; /* Цвет фона кнопки при наведении */
+        border-color: #0056b3; /* Цвет границы кнопки при наведении */
+    }
+
+    .container {
+        padding: 40px 0; /* Отступы сверху и снизу для контейнера */
+    }
+
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* Расстояние между карточками */
+    }
+
+    .col-md-4, .col-sm-6, .col-12 {
+        padding: 10px; /* Внешний отступ для колонок */
+    }
+
+    /* Адаптивность для мобильных устройств */
+    @media (max-width: 768px) {
+        .col-md-4 {
+            flex: 1 1 100%; /* При малых экранах карточки будут занимать 100% ширины */
+        }
+    }
+
+    /* Стиль для малых экранов */
+    @media (max-width: 576px) {
+        .card-title {
+            font-size: 1.1rem; /* Уменьшаем размер заголовка на маленьких экранах */
+        }
+
+        .card-text {
+            font-size: 0.75rem; /* Уменьшаем размер текста на маленьких экранах */
+        }
+    }
+
+    /* Стиль для фильтра */
+    .filter-input {
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .filter-input:focus {
+        border-color: #0056b3;
+        outline: none;
+    }
+
+    /* Стиль для кнопки авторизации */
+    .auth-btn {
+        background-color: #28a745; /* Зеленый цвет для кнопки */
+        color: white;
+        padding: 12px 20px;
+        font-weight: 600;
+        border-radius: 5px;
+        text-transform: uppercase;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .auth-btn:hover {
+        background-color: #218838; /* Более темный зеленый при наведении */
+    }
+
+    /* Для контейнера, чтобы инпут и кнопка располагались на одной строке */
+    .search-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px; /* Расстояние между инпутом и кнопкой */
+    }
+    .auth {
+  color: white;
+  text-decoration: none;
+}
+
+</style>
+
+{% extends 'base.html' %}
+
+{% block title %}Все темы{% endblock %}
+
+{% block content_title %}Темы{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="search-container mb-4">
+        <form method="GET">
+            <input type="text" class="filter-input" placeholder="Введите название темы" name="q" value="{{ request.args.get('q', '') }}">
+        </form>
+        {% if not current_user.is_authenticated %}
+      <button class="auth-btn">
+        <a href="{{ url_for('security.login') }}" class="auth">Авторизация</a>
+      </button>
+    {% else %}
+      <button class="auth-btn">
+        <a href="{{ url_for('security.logout') }}" class="auth">Выход</a>
+      </button>
+    {% endif %}
+    </div>
+
+    <div class="row">
+        {% for topic in topics %}
+        <div class="col-md-4 col-sm-6 col-12">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ topic.title }}</h5>
+                    <p class="card-text">
+                        <small class="text-muted">Slug: {{ topic.slug }}</small>
+                    </p>
+                    <a href="{{ url_for('main.topic_detail', slug=topic.slug) }}" class="btn btn-primary">Подробнее</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+
+
+

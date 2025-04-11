@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+
+        {% endblock %} | Flask app
+    </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo_href{
+            text-decoration: none;
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <a href="/" class="logo_href">
+                <h1>GlitchNet</h1>
+            </a>
+            
+        </div>
+    </div>
+    {% if current_user.has_role('admin') %}
+        <button>
+            <a href="/admin" class="logo_href">
+            Admin panel
+        </a>
+        </button>
+            {% endif %}
+    <div class="container">
+        <div class="col">
+            <h1>
+                {% block content_title %}
+
+                {% endblock %}
+            </h1>
+
+            {% block content %}
+
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>

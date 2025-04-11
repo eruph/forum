@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ post.title }}
+{% endblock %}
+
+{% block content_title %}
+    {{ post.title }}
+{% endblock %}
+
+{% block content %}
+    {% if tags %}
+        <div class="tags">
+            <span>tags: </span>
+            {% for tag in tags %}
+            <a href="{{ url_for('main.tag_detail', slug=tag.slug) }}">
+                <span class="label label-primary">{{ tag.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">Тегов нет.</p>
+    {% endif %}
+    <hr>
+
+    <div class="main-content">
+        {{ post.body }}
+    </div>
+
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('main.edit_post', slug=post.slug) }}" class="btn btn-warning mt-3">
+            ✏️ Редактировать пост
+        </a>
+    {% endif %}
+{% endblock %}
